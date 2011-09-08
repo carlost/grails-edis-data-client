@@ -1,10 +1,7 @@
 package edisdataclient
 
-import grails.test.*
-
 class DateComparisonTests extends GroovyTestCase {
 	EdisDataService edisDataService
-	
 
 	void testDateComparisonParamWorks() {
 		def docs = edisDataService.findDocuments([officialReceivedDate:[comparisonType:"EXACT",date:"2011-06-27"]])
@@ -13,5 +10,4 @@ class DateComparisonTests extends GroovyTestCase {
 		}
 	}
 
-	
 }
