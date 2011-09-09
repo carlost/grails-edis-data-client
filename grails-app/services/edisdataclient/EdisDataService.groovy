@@ -219,9 +219,9 @@ class EdisDataService {
       doc << [firmOrganization: xml.firmOrganization.text()]
       doc << [filedBy: xml.filedBy.text()]
       doc << [onBehalfOf: xml.onBehalfOf.text()]
-      doc << [documentDate: xml.documentDate.text().toDate()]
-      doc << [officialReceivedDate: xml.officialReceivedDate.text().toDate()]
-      doc << [modifiedDate: xml.modifiedDate.text().toDate()]
+      doc << [documentDate: xml.documentDate.text() as Date]
+      doc << [officialReceivedDate: xml.officialReceivedDate.text() as Date]
+      doc << [modifiedDate: xml.modifiedDate.text() as Date]
       doc << [investigation: buildInv(xml)]
       doc
     }
@@ -250,9 +250,9 @@ class EdisDataService {
       if (xml.pageCount.text()) {
         att << [pageCount: xml.pageCount.text() as Long]
       }
-      att << [createDate: xml.createDate.text().toDate()]
+      att << [createDate: xml.createDate.text() as Date]
       if (xml.lastModifiedDate.text()) {
-        att << [lastModifiedDate: xml.lastModifiedDate.text().toDate()]
+        att << [lastModifiedDate: xml.lastModifiedDate.text() as Date]
       }
       att
     }
