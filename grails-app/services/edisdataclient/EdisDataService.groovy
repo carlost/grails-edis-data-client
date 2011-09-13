@@ -66,7 +66,7 @@ class EdisDataService {
     if (params.investigationStatus) {
       query << [investigationStatus: investigationStatus]
     }
-    path = "investigation/"
+    def path = "investigation/"
     if (params.investigationNumber) {
       path += params.investigationNumber
       if (params.investigationPhase) {
@@ -78,7 +78,7 @@ class EdisDataService {
     }
 
     def invs = []
-    rest.get(contentType.XML, path: "investigation") {
+    rest.get(contentType: ContentType.XML, path: path) {
       resp, xml ->
       xml.investigations.investigation.each {
         invs << buildInv(it)
@@ -210,6 +210,7 @@ class EdisDataService {
   }
 
   private def buildDoc(xml) {
+    //everything except for attachmentListUri
     use(StringToDateCategory) {
       def doc = [:]
       doc << [id: xml.id.text() as Long]
@@ -228,16 +229,18 @@ class EdisDataService {
   }
 
   private def buildInv(xml) {
+    //everything except for documentListUri
     def inv = [:]
-    inv << [investigationNumber: xml.investigationNumber.text()]
-    inv << [investigationPhase: xml.investigationPhase.text()]
-    inv << [investigationStatus: xml.investigationStatus.text()]
-    inv << [investigationTitle: xml.investigationTitle.text()]
-    inv << [investigationType: xml.investigationType.text()]
+    xml.childNodes().each {
+      if(!'documentListUri'.equals(it.name)) {
+        inv << [(it.name): it.text()]
+      }
+    }
     inv
   }
 
   private def buildAtt(xml) {
+    //everything except for downloadUri
     use(StringToDateCategory) {
       def att = [:]
       att << [id: xml.id.text()]
