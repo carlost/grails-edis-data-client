@@ -212,28 +212,45 @@ class EdisDataService {
   private def buildDoc(xml) {
     //everything except for attachmentListUri
     use(StringToDateCategory) {
-      def doc = [:]
-      doc << [id: xml.id.text() as Long]
-      doc << [documentTitle: xml.documentTitle.text()]
-      doc << [documentType: xml.documentType.text()]
-      doc << [securityLevel: xml.securityLevel.text()]
-      doc << [firmOrganization: xml.firmOrganization.text()]
-      doc << [filedBy: xml.filedBy.text()]
-      doc << [onBehalfOf: xml.onBehalfOf.text()]
-      doc << [documentDate: xml.documentDate.text() as Date]
-      doc << [officialReceivedDate: xml.officialReceivedDate.text() as Date]
-      doc << [modifiedDate: xml.modifiedDate.text() as Date]
+      def matcher = {name ->
+        def results = [true, null]
+        if (isInvestigationRelated(name)) {
+          results[0] = false
+        } else if ('id'.equals(name)) {
+          results[1] = Long
+        } else if (name =~ /Date$/) {
+          results[1] = Date
+        }
+        results
+      }
+
+      def doc = transformXmlToMap(xml, matcher)
       doc << [investigation: buildInv(xml)]
       doc
     }
   }
 
   private def buildInv(xml) {
+    def matcher = { name -> [isInvestigationRelated(name), null]}
+    transformXmlToMap xml, matcher
+  }
+
+  private def isInvestigationRelated(name) {
+    name =~ /^investigation/
+  }
+
+
+  private def transformXmlToMap(xml, matcher) {
     //everything except for documentListUri
     def inv = [:]
     xml.childNodes().each {
-      if(!'documentListUri'.equals(it.name)) {
-        inv << [(it.name): it.text()]
+      def (include, type) = matcher(it.name)
+      if (include) {
+        def value = it.text()
+        if (type) {
+          value = value.asType(type)
+        }
+        inv << [(it.name): value]
       }
     }
     inv
@@ -242,6 +259,23 @@ class EdisDataService {
   private def buildAtt(xml) {
     //everything except for downloadUri
     use(StringToDateCategory) {
+      /*
+            def matcher = {name ->
+        def results = [true, null]
+        if (isInvestigationRelated(name)) {
+          results[0] = false
+        } else if ('id'.equals(name)) {
+          results[1] = Long
+        } else if (name =~ /Date$/) {
+          results[1] = Date
+        }
+        results
+      }
+
+      def doc = transformXmlToMap(xml, matcher)
+      doc << [investigation: buildInv(xml)]
+      doc
+       */
       def att = [:]
       att << [id: xml.id.text()]
       att << [documentId: xml.documentId.text()]
