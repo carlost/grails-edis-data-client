@@ -1,10 +1,6 @@
 package edisdataclient
 
-/**
- * User: carlos
- * Date: 9/13/11
- * Time: 9:44 PM
- */
+
 class FindDocumentTests extends GroovyTestCase {
 
   EdisDataService edisDataService
